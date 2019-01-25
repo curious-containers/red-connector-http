@@ -16,6 +16,6 @@ requests = "^2.18"
 [tool.poetry.dev-dependencies]
 
 [tool.poetry.scripts]
-red-connector-http = 'red_connector_http.main:http_main'
-red-connector-http-json = 'red_connector_http.main:http_json_main'
-red-connector-http-mock-send = 'red_connector_http.main:http_mock_send_main'
+red-connector-http = 'red_connector_http.main:main'
+red-connector-http-json = 'red_connector_http.main_json:main'
+red-connector-http-mock-send = 'red_connector_http.main_mock_send:main'
