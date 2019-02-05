@@ -1,6 +1,7 @@
 import os
 import stat
 from copy import deepcopy
+import shutil
 
 import requests
 import json
@@ -16,8 +17,6 @@ _HTTP_METHODS_ENUMS = deepcopy(_HTTP_METHODS) + [m.lower() for m in _HTTP_METHOD
 
 _AUTH_METHODS = ['Basic', 'Digest']
 _AUTH_METHODS_ENUMS = deepcopy(_AUTH_METHODS) + [m.lower() for m in _AUTH_METHODS] + [m.upper() for m in _AUTH_METHODS]
-
-URL_SCHEME_IDENTIFIER = 'path'
 
 HTTP_SCHEMA = {
     'type': 'object',
@@ -94,12 +93,21 @@ class Http:
         )
         r.raise_for_status()
 
-        with open(internal[URL_SCHEME_IDENTIFIER], 'wb') as f:
+        with open(internal['path'], 'wb') as f:
             for chunk in r.iter_content(chunk_size=4096):
                 if chunk:
                     f.write(chunk)
 
         r.raise_for_status()
+
+    @staticmethod
+    def receive_cleanup(internal):
+        """
+        Removes the given file.
+
+        :param internal: A dictionary containing a path to the file to remove.
+        """
+        os.remove(internal['path'])
 
     @staticmethod
     def receive_validate(access):
@@ -117,7 +125,7 @@ class Http:
         if access.get('disableSSLVerification'):
             verify = False
 
-        with open(internal[URL_SCHEME_IDENTIFIER], 'rb') as f:
+        with open(internal['path'], 'rb') as f:
             r = http_method_func(
                 access['url'],
                 data=f,
@@ -221,7 +229,7 @@ class Http:
         listing = deepcopy(listing)
 
         Http.build_path(access['url'], listing, 'complete_url')
-        Http.build_path(internal[URL_SCHEME_IDENTIFIER], listing, 'complete_path')
+        Http.build_path(internal['path'], listing, 'complete_path')
 
         http_method_func = _http_method_func(access, 'GET')
         auth_method_obj = _auth_method_obj(access)
@@ -230,7 +238,7 @@ class Http:
         if access.get('disableSSLVerification'):
             verify = False
 
-        os.mkdir(internal[URL_SCHEME_IDENTIFIER], DEFAULT_DIRECTORY_MODE)
+        os.mkdir(internal['path'], DEFAULT_DIRECTORY_MODE)
 
         Http.fetch_directory(listing, http_method_func, auth_method_obj, verify)
 
@@ -240,6 +248,15 @@ class Http:
             jsonschema.validate(access, HTTP_SCHEMA)
         except ValidationError as e:
             raise Exception(e.context)
+
+    @staticmethod
+    def receive_directory_cleanup(internal):
+        """
+        Removes the given directory.
+
+        :param internal: A dictionary containing a path to the directory to remove.
+        """
+        shutil.rmtree(internal['path'])
 
 
 class HttpJson:
@@ -260,7 +277,7 @@ class HttpJson:
         r.raise_for_status()
         data = r.json()
 
-        with open(internal[URL_SCHEME_IDENTIFIER], 'wb') as f:
+        with open(internal['path'], 'wb') as f:
             json.dump(data, f)
 
     @staticmethod
@@ -271,11 +288,20 @@ class HttpJson:
             raise Exception(e.context)
 
     @staticmethod
+    def receive_cleanup(internal):
+        """
+        Removes the given file.
+
+        :param internal: A dictionary containing a path to the file to remove.
+        """
+        os.remove(internal['path'])
+
+    @staticmethod
     def send(access, internal):
         http_method_func = _http_method_func(access, 'POST')
         auth_method_obj = _auth_method_obj(access)
 
-        with open(internal[URL_SCHEME_IDENTIFIER]) as f:
+        with open(internal['path']) as f:
             data = json.load(f)
 
         if access.get('mergeAgencyData') and internal.get('agencyData'):
