@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "red-connector-http"
-version = "0.3"
+version = "0.4"
 authors = ["Christoph Jansen <Christoph.Jansen@htw-berlin.de>", "Bruno Schilling <Bruno.Schilling@student.htw-berlin.de>"]
 license = "AGPL-3.0"
 readme = "README.md"
@@ -12,11 +12,9 @@ description = "RED Connector HTTP is part of the Curious Containers project."
 python = "^3.4"
 jsonschema = "^2.6"
 requests = "^2.18"
-cc-connector-cli = "^0.3.0"
 
 [tool.poetry.dev-dependencies]
 
 [tool.poetry.scripts]
-red-connector-http = 'red_connector_http.main:main'
-red-connector-http-json = 'red_connector_http.main_json:main'
-red-connector-http-mock-send = 'red_connector_http.main_mock_send:main'
+red-connector-http = 'red_connector_http.http.main:main'
+red-connector-http-json = 'red_connector_http.http_json.main:main'
