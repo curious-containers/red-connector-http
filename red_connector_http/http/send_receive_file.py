@@ -1,3 +1,4 @@
+import json
 from argparse import ArgumentParser
 
 from red_connector_http.commons.schemas import SCHEMA
@@ -12,6 +13,9 @@ SEND_FILE_VALIDATE_DESCRIPTION = 'Validate access data for send-file.'
 
 
 def _receive_file(access, local_file_path):
+    with open(access) as f:
+        access = json.load(f)
+
     http_method = http_method_func(access, 'GET')
     auth_method = auth_method_obj(access)
 
@@ -23,10 +27,16 @@ def _receive_file(access, local_file_path):
 
 
 def _receive_file_validate(access):
+    with open(access) as f:
+        access = json.load(f)
+
     validate(access, SCHEMA)
 
 
 def _send_file(access, local_file_path):
+    with open(access) as f:
+        access = json.load(f)
+
     http_method = http_method_func(access, 'POST')
     auth_method = auth_method_obj(access)
 
@@ -45,6 +55,9 @@ def _send_file(access, local_file_path):
 
 
 def _send_file_validate(access):
+    with open(access) as f:
+        access = json.load(f)
+    
     validate(access, SCHEMA)
 
 

@@ -1,4 +1,5 @@
 import os
+import json
 from argparse import ArgumentParser
 from copy import deepcopy
 
@@ -12,6 +13,9 @@ RECEIVE_DIR_VALIDATE_DESCRIPTION = 'Validate access data for receive-dir.'
 
 
 def _receive_dir(access, local_dir_path, listing):
+    with open(access) as f:
+        access = json.load(f)
+
     listing = deepcopy(listing)
 
     build_path(access['url'], listing, 'complete_url')
@@ -31,6 +35,9 @@ def _receive_dir(access, local_dir_path, listing):
 
 
 def _receive_dir_validate(access, listing):
+    with open(access) as f:
+        access = json.load(f)
+
     validate(access, SCHEMA)
     if listing is None:
         raise ListingError('red-connector-http receive-dir requires listing.')

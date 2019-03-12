@@ -1,4 +1,5 @@
 import os
+import json
 import subprocess
 from argparse import ArgumentParser
 
@@ -13,6 +14,9 @@ UMOUNT_DIR_DESCRIPTION = 'Unmout directory previously mounted via mount-dir.'
 
 
 def _mount_dir(access, local_dir_path):
+    with open(access) as f:
+        access = json.load(f)
+
     url = access['url']
     path = local_dir_path
 
@@ -58,6 +62,9 @@ def _mount_dir(access, local_dir_path):
 
 
 def _mount_dir_validate(access):
+    with open(access) as f:
+        access = json.load(f)
+
     validate(access, MOUNT_DIR_SCHEMA)
     _ = find_executables()
 
