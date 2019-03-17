@@ -1,8 +1,10 @@
 import json
 from argparse import ArgumentParser
 
+import jsonschema
+
 from red_connector_http.commons.schemas import SCHEMA
-from red_connector_http.commons.helpers import validate, http_method_func, auth_method_obj, fetch_file
+from red_connector_http.commons.helpers import http_method_func, auth_method_obj, fetch_file, graceful_error
 
 
 RECEIVE_FILE_DESCRIPTION = 'Receive input file from HTTP(S) server.'
@@ -30,7 +32,7 @@ def _receive_file_validate(access):
     with open(access) as f:
         access = json.load(f)
 
-    validate(access, SCHEMA)
+    jsonschema.validate(access, SCHEMA)
 
 
 def _send_file(access, local_file_path):
@@ -58,9 +60,10 @@ def _send_file_validate(access):
     with open(access) as f:
         access = json.load(f)
     
-    validate(access, SCHEMA)
+    jsonschema.validate(access, SCHEMA)
 
 
+@graceful_error
 def receive_file():
     parser = ArgumentParser(description=RECEIVE_FILE_DESCRIPTION)
     parser.add_argument(
@@ -75,6 +78,7 @@ def receive_file():
     _receive_file(**args.__dict__)
 
 
+@graceful_error
 def receive_file_validate():
     parser = ArgumentParser(description=RECEIVE_FILE_VALIDATE_DESCRIPTION)
     parser.add_argument(
@@ -85,6 +89,7 @@ def receive_file_validate():
     _receive_file_validate(**args.__dict__)
 
 
+@graceful_error
 def send_file():
     parser = ArgumentParser(description=SEND_FILE_DESCRIPTION)
     parser.add_argument(
@@ -99,6 +104,7 @@ def send_file():
     _send_file(**args.__dict__)
 
 
+@graceful_error
 def send_file_validate():
     parser = ArgumentParser(description=SEND_FILE_VALIDATE_DESCRIPTION)
     parser.add_argument(

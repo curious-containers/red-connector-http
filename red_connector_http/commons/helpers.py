@@ -1,5 +1,7 @@
 import os
+import sys
 import jsonschema
+from functools import wraps
 from shutil import which
 
 import requests
@@ -10,12 +12,29 @@ FUSERMOUNT_EXECUTABLES = ['fusermount3', 'fusermount']
 HTTPDIRFS_EXECUTABLES = ['httpfirfs']
 
 
-class ValidationError(Exception):
-    pass
-
-
 class ListingError(Exception):
     pass
+
+
+def graceful_error(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+
+        except jsonschema.exceptions.ValidationError as e:
+            if hasattr(e, 'context'):
+                print('{}:{}Context: {}'.format(repr(e), os.linesep, e.context), file=sys.stderr)
+                exit(1)
+
+            print(repr(e), file=sys.stderr)
+            exit(2)
+
+        except Exception as e:
+            print('{}:{}{}'.format(repr(e), os.linesep, e), file=sys.stderr)
+            exit(3)
+
+    return wrapper
 
 
 def find_executables():
@@ -143,13 +162,3 @@ def build_path(base_path, listing, key):
         if sub['class'] == 'Directory':
             if 'listing' in sub:
                 build_path(path, sub['listing'], key)
-
-
-def validate(instance, schema):
-    try:
-        jsonschema.validate(instance, schema)
-    except jsonschema.ValidationError as e:
-        if hasattr(e, 'context') and e.context is not None:
-            raise ValidationError(str(e.context))
-        else:
-            raise ValidationError(str(e))

@@ -3,9 +3,11 @@ import json
 from argparse import ArgumentParser
 from copy import deepcopy
 
+import jsonschema
+
 from red_connector_http.commons.schemas import SCHEMA
-from red_connector_http.commons.helpers import validate, ListingError, build_path, fetch_directory
-from red_connector_http.commons.helpers import http_method_func, auth_method_obj
+from red_connector_http.commons.helpers import ListingError, build_path, fetch_directory
+from red_connector_http.commons.helpers import http_method_func, auth_method_obj, graceful_error
 
 
 RECEIVE_DIR_DESCRIPTION = 'Receive input dir from HTTP(S) server.'
@@ -38,11 +40,12 @@ def _receive_dir_validate(access, listing):
     with open(access) as f:
         access = json.load(f)
 
-    validate(access, SCHEMA)
+    jsonschema.validate(access, SCHEMA)
     if listing is None:
         raise ListingError('red-connector-http receive-dir requires listing.')
 
 
+@graceful_error
 def receive_dir():
     parser = ArgumentParser(description=RECEIVE_DIR_DESCRIPTION)
     parser.add_argument(
@@ -61,6 +64,7 @@ def receive_dir():
     _receive_dir(**args.__dict__)
 
 
+@graceful_error
 def receive_dir_validate():
     parser = ArgumentParser(description=RECEIVE_DIR_VALIDATE_DESCRIPTION)
     parser.add_argument(
