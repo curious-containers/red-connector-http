@@ -18,6 +18,9 @@ def _receive_dir(access, local_dir_path, listing):
     with open(access) as f:
         access = json.load(f)
 
+    with open(listing) as f:
+        listing = json.load(f)
+
     listing = deepcopy(listing)
 
     build_path(access['url'], listing, 'complete_url')
