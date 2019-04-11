@@ -9,7 +9,7 @@ from requests.auth import HTTPBasicAuth, HTTPDigestAuth
 
 
 FUSERMOUNT_EXECUTABLES = ['fusermount3', 'fusermount']
-HTTPDIRFS_EXECUTABLES = ['httpfirfs']
+HTTPDIRFS_EXECUTABLES = ['httpdirfs']
 
 
 class ListingError(Exception):
@@ -37,26 +37,33 @@ def graceful_error(func):
     return wrapper
 
 
-def find_executables():
-    httpdirfs_executable = None
-    for executable in FUSERMOUNT_EXECUTABLES:
+def _get_working_executable(executables):
+    """
+    Returns the first executable that can be found in PATH.
+    :param executables: A list of strings defining executables to test
+    :return: A string defining a executable in executables
+    :raise Exception: If no executable was found in PATH
+    """
+    for executable in executables:
         if which(executable):
-            httpdirfs_executable = executable
-            break
-    if not httpdirfs_executable:
-        raise Exception('One of the following executables must be present in PATH: {}'.format(
-            HTTPDIRFS_EXECUTABLES
-        ))
+            return executable
 
-    fusermount_executable = None
-    for executable in FUSERMOUNT_EXECUTABLES:
-        if which(executable):
-            fusermount_executable = executable
-            break
-    if not fusermount_executable:
-        raise Exception('One of the following executables must be present in PATH: {}'.format(
-            FUSERMOUNT_EXECUTABLES
-        ))
+    raise Exception('One of the following executables must be present in PATH: {}'.format(
+        executables
+    ))
+
+
+def find_httpdirfs_executable():
+    return _get_working_executable(HTTPDIRFS_EXECUTABLES)
+
+
+def find_umount_executable():
+    return _get_working_executable(FUSERMOUNT_EXECUTABLES)
+
+
+def find_mount_executables():
+    httpdirfs_executable = _get_working_executable(HTTPDIRFS_EXECUTABLES)
+    fusermount_executable = _get_working_executable(FUSERMOUNT_EXECUTABLES)
 
     return httpdirfs_executable, fusermount_executable
 

@@ -1,8 +1,10 @@
 import json
 from argparse import ArgumentParser
 
+from jsonschema import validate
+
 from red_connector_http.commons.schemas import SCHEMA
-from red_connector_http.commons.helpers import validate, http_method_func, auth_method_obj
+from red_connector_http.commons.helpers import http_method_func, auth_method_obj
 
 
 RECEIVE_FILE_DESCRIPTION = 'Receive JSON input from HTTP(S) server.'

@@ -5,7 +5,8 @@ from argparse import ArgumentParser
 
 import jsonschema
 
-from red_connector_http.commons.helpers import find_executables, graceful_error
+from red_connector_http.commons.helpers import find_mount_executables, graceful_error, find_httpdirfs_executable, \
+    find_umount_executable
 from red_connector_http.commons.schemas import MOUNT_DIR_SCHEMA
 
 
@@ -22,7 +23,7 @@ def _mount_dir(access, local_dir_path):
     url = access['url']
     path = local_dir_path
 
-    httpdirfs_executable, _ = find_executables()
+    httpdirfs_executable = find_httpdirfs_executable()
 
     command = [httpdirfs_executable]
 
@@ -68,11 +69,11 @@ def _mount_dir_validate(access):
         access = json.load(f)
 
     jsonschema.validate(access, MOUNT_DIR_SCHEMA)
-    _ = find_executables()
+    _ = find_mount_executables()
 
 
 def _umount_dir(local_dir_path):
-    _, fusermount_executable = find_executables()
+    fusermount_executable = find_umount_executable()
 
     process_result = subprocess.run([fusermount_executable, '-u', local_dir_path], stderr=subprocess.PIPE)
     if process_result.returncode != 0:

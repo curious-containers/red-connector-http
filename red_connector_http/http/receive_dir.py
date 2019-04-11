@@ -18,6 +18,9 @@ def _receive_dir(access, local_dir_path, listing):
     with open(access) as f:
         access = json.load(f)
 
+    if listing is None:
+        raise ListingError('red-connector-http receive-dir requires listing.')
+
     with open(listing) as f:
         listing = json.load(f)
 
@@ -45,7 +48,11 @@ def _receive_dir_validate(access, listing):
 
     jsonschema.validate(access, SCHEMA)
     if listing is None:
-        raise ListingError('red-connector-http receive-dir requires listing.')
+        raise ListingError('red-connector-http receive-dir-validate requires listing.')
+
+    with open(listing) as f:
+        # TODO validate listing
+        json.load(f)
 
 
 @graceful_error
