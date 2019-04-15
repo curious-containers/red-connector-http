@@ -5,8 +5,7 @@ from json import JSONDecodeError
 from jsonschema import validate
 
 from red_connector_http.commons.schemas import SCHEMA
-from red_connector_http.commons.helpers import http_method_func, auth_method_obj, graceful_error, CONNECT_TIMEOUT, \
-    READ_TIMEOUT
+from red_connector_http.commons.helpers import http_method_func, auth_method_obj, graceful_error, DEFAULT_TIMEOUT
 
 RECEIVE_FILE_DESCRIPTION = 'Receive JSON input from HTTP(S) server.'
 RECEIVE_FILE_VALIDATE_DESCRIPTION = 'Validate access data for receive-file.'
@@ -29,7 +28,8 @@ def _receive_file(access, local_file_path):
     r = http_method(
         access['url'],
         auth=auth_method,
-        verify=verify
+        verify=verify,
+        timeout=DEFAULT_TIMEOUT
     )
     r.raise_for_status()
     try:
@@ -68,7 +68,7 @@ def _send_file(access, local_file_path):
         json=data,
         auth=auth_method,
         verify=verify,
-        timeout=(CONNECT_TIMEOUT, READ_TIMEOUT)
+        timeout=DEFAULT_TIMEOUT
     )
     r.raise_for_status()
 
