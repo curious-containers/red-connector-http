@@ -53,7 +53,8 @@ def _send_file(access, local_file_path):
         access['url'],
         json=data,
         auth=auth_method,
-        verify=verify
+        verify=verify,
+        timeout=(CONNECT_TIMEOUT, READ_TIMEOUT)
     )
     r.raise_for_status()
 

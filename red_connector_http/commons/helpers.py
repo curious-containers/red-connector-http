@@ -11,6 +11,9 @@ from requests.auth import HTTPBasicAuth, HTTPDigestAuth
 FUSERMOUNT_EXECUTABLES = ['fusermount3', 'fusermount']
 HTTPDIRFS_EXECUTABLES = ['httpdirfs']
 
+CONNECT_TIMEOUT = 12.05
+READ_TIMEOUT = 1000
+
 
 class ListingError(Exception):
     pass
@@ -121,7 +124,8 @@ def fetch_file(file_path, url, http_method, auth_method, verify=True):
         url,
         auth=auth_method,
         verify=verify,
-        stream=True
+        stream=True,
+        timeout=(CONNECT_TIMEOUT, READ_TIMEOUT)
     )
     r.raise_for_status()
 
