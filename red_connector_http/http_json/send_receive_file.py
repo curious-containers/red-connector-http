@@ -1,11 +1,12 @@
 import json
 from argparse import ArgumentParser
+from json import JSONDecodeError
 
 from jsonschema import validate
 
 from red_connector_http.commons.schemas import SCHEMA
-from red_connector_http.commons.helpers import http_method_func, auth_method_obj
-
+from red_connector_http.commons.helpers import http_method_func, auth_method_obj, graceful_error, CONNECT_TIMEOUT, \
+    READ_TIMEOUT
 
 RECEIVE_FILE_DESCRIPTION = 'Receive JSON input from HTTP(S) server.'
 RECEIVE_FILE_VALIDATE_DESCRIPTION = 'Validate access data for receive-file.'
@@ -15,6 +16,9 @@ SEND_FILE_VALIDATE_DESCRIPTION = 'Validate access data for send-file.'
 
 
 def _receive_file(access, local_file_path):
+    with open(access) as f:
+        access = json.load(f)
+
     http_method = http_method_func(access, 'GET')
     auth_method = auth_method_obj(access)
 
@@ -28,17 +32,27 @@ def _receive_file(access, local_file_path):
         verify=verify
     )
     r.raise_for_status()
-    data = r.json()
+    try:
+        data = r.json()
+    except JSONDecodeError as e:
+        raise JSONDecodeError('Could not parse the http response as json object. Failed with the following message:\n'
+                              .format(str(e)), e.doc, e.pos)
 
-    with open(local_file_path, 'wb') as f:
+    with open(local_file_path, 'w') as f:
         json.dump(data, f)
 
 
 def _receive_file_validate(access):
+    with open(access) as f:
+        access = json.load(f)
+
     validate(access, SCHEMA)
 
 
 def _send_file(access, local_file_path):
+    with open(access) as f:
+        access = json.load(f)
+
     http_method = http_method_func(access, 'POST')
     auth_method = auth_method_obj(access)
 
@@ -60,9 +74,13 @@ def _send_file(access, local_file_path):
 
 
 def _send_file_validate(access):
+    with open(access) as f:
+        access = json.load(f)
+
     validate(access, SCHEMA)
 
 
+@graceful_error
 def receive_file():
     parser = ArgumentParser(description=RECEIVE_FILE_DESCRIPTION)
     parser.add_argument(
@@ -77,6 +95,7 @@ def receive_file():
     _receive_file(**args.__dict__)
 
 
+@graceful_error
 def receive_file_validate():
     parser = ArgumentParser(description=RECEIVE_FILE_VALIDATE_DESCRIPTION)
     parser.add_argument(
@@ -87,6 +106,7 @@ def receive_file_validate():
     _receive_file_validate(**args.__dict__)
 
 
+@graceful_error
 def send_file():
     parser = ArgumentParser(description=SEND_FILE_DESCRIPTION)
     parser.add_argument(
@@ -101,6 +121,7 @@ def send_file():
     _send_file(**args.__dict__)
 
 
+@graceful_error
 def send_file_validate():
     parser = ArgumentParser(description=SEND_FILE_VALIDATE_DESCRIPTION)
     parser.add_argument(
