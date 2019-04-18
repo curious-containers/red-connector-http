@@ -21,7 +21,12 @@ def _mount_dir(access, local_dir_path):
         access = json.load(f)
 
     url = access['url']
-    path = local_dir_path
+
+    use_pwd, path = os.path.split(os.path.normpath(local_dir_path))
+
+    if len(path) > 64:
+        raise Exception('httpdirfs does not support paths, which contain more than 64 characters. The given path "{}"'
+                        'contains {} characters.'.format(path, len(path)))
 
     httpdirfs_executable = find_httpdirfs_executable()
 
@@ -44,18 +49,21 @@ def _mount_dir(access, local_dir_path):
 
     command = ' '.join(command)
 
-    os.mkdir(path)
+    os.mkdir(local_dir_path)
 
     process_result = subprocess.run(
         command,
         stderr=subprocess.PIPE,
         stdout=subprocess.DEVNULL,
-        shell=True
+        shell=True,
+        cwd=use_pwd
     )
 
-    if process_result.returncode != 0:
-        if os.path.isdir(path):
-            os.rmdir(path)
+    # check if execution was successful and target directory contains something, because httpdirfs does have
+    # return code 0 under certain circumstances even if it fails to mount
+    if (process_result.returncode != 0) or (len(os.listdir(local_dir_path)) == 0):
+        if os.path.isdir(local_dir_path):
+            os.rmdir(local_dir_path)
         if auth:
             raise Exception('Could not mount from "{}" for user "{}" using "{}":\n{}'
                             .format(url, auth['username'], httpdirfs_executable, process_result.stderr.decode('utf-8')))
