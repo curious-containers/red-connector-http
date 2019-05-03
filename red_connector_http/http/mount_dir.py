@@ -42,6 +42,10 @@ def _mount_dir(access, local_dir_path):
             '\'{}\''.format(auth['password']),
         ])
 
+    use_cache = access.get('cache')
+    if use_cache:
+        command.append('--cache')
+
     command.extend([
         url,
         path

@@ -41,6 +41,7 @@ MOUNT_DIR_SCHEMA = {
             'additionalProperties': False,
             'required': ['username', 'password']
         },
+        'cache': {'type': 'boolean'}
     },
     'additionalProperties': False,
     'required': ['url']
