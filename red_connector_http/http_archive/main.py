@@ -3,8 +3,8 @@ from collections import OrderedDict
 from red_connector_http.commons.cli_modes import cli_modes
 from red_connector_http.version import VERSION
 
-from red_connector_http.http.receive_dir import receive_dir, receive_dir_validate
-from red_connector_http.http.receive_dir import RECEIVE_DIR_DESCRIPTION, RECEIVE_DIR_VALIDATE_DESCRIPTION
+from red_connector_http.http_archive.receive_dir import receive_dir, receive_dir_validate
+from red_connector_http.http_archive.receive_dir import RECEIVE_DIR_DESCRIPTION, RECEIVE_DIR_VALIDATE_DESCRIPTION
 
 
 CLI_VERSION = '0.1'
