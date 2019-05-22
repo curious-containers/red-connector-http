@@ -10,8 +10,8 @@ description = "RED Connector HTTP is part of the Curious Containers project."
 
 [tool.poetry.dependencies]
 python = "^3.4"
-jsonschema = "^2.6"
 requests = "^2.18"
+jsonschema = "^3.0"
 
 [tool.poetry.dev-dependencies]
 
