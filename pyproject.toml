@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "red-connector-http"
-version = "0.4"
+version = "0.5"
 authors = ["Christoph Jansen <Christoph.Jansen@htw-berlin.de>", "Bruno Schilling <Bruno.Schilling@student.htw-berlin.de>"]
 license = "AGPL-3.0"
 readme = "README.md"
@@ -18,3 +18,4 @@ requests = "^2.18"
 [tool.poetry.scripts]
 red-connector-http = 'red_connector_http.http.main:main'
 red-connector-http-json = 'red_connector_http.http_json.main:main'
+red-connector-http-archive = 'red_connector_http.http_archive.main:main'

@@ -46,3 +46,7 @@ MOUNT_DIR_SCHEMA = {
     'additionalProperties': False,
     'required': ['url']
 }
+
+ARCHIVE_SCHEMA = deepcopy(SCHEMA)
+ARCHIVE_SCHEMA['properties']['archiveFormat'] = {'enum': ['zip', 'tar', 'gztar', 'bztar', 'xztar']}
+ARCHIVE_SCHEMA['required'].append('archiveFormat')
