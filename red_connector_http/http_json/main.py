@@ -9,7 +9,7 @@ from red_connector_http.http_json.send_receive_file import send_file, send_file_
 from red_connector_http.http_json.send_receive_file import SEND_FILE_DESCRIPTION, SEND_FILE_VALIDATE_DESCRIPTION
 
 
-CLI_VERSION = '0.1'
+CLI_VERSION = '1'
 SCRIPT_NAME = 'red-connector-http-json'
 DESCRIPTION = 'RED Connector HTTP JSON'
 TITLE = 'modes'

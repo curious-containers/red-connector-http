@@ -7,7 +7,7 @@ from red_connector_http.http_archive.receive_dir import receive_dir, receive_dir
 from red_connector_http.http_archive.receive_dir import RECEIVE_DIR_DESCRIPTION, RECEIVE_DIR_VALIDATE_DESCRIPTION
 
 
-CLI_VERSION = '0.1'
+CLI_VERSION = '1'
 SCRIPT_NAME = 'red-connector-http-archive'
 DESCRIPTION = 'RED Connector HTTP Archive'
 TITLE = 'modes'

@@ -16,7 +16,7 @@ from red_connector_http.http.mount_dir import MOUNT_DIR_DESCRIPTION, MOUNT_DIR_V
 from red_connector_http.http.mount_dir import UMOUNT_DIR_DESCRIPTION
 
 
-CLI_VERSION = '0.1'
+CLI_VERSION = '1'
 SCRIPT_NAME = 'red-connector-http'
 DESCRIPTION = 'RED Connector HTTP'
 TITLE = 'modes'
